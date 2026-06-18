@@ -42,7 +42,12 @@ flowchart LR
     J --> M[mart_product_performance]
     J --> N[mart_seller_metrics]
 ```
-
+## Dashboard
+The final dashboard was built in Power BI and covers three areas:
+- Sales overview — total revenue, orders, customers, average order value, monthly sales trend, and month-over-month growth
+- Product performance — top-selling categories, sales vs order volume by category, and top products by units sold
+- Customer analysis — RFM-based customer segmentation (Champions, Loyal, Potential, Churned)
+  
 ## Technologies Used
 -  Apache Airflow – Workflow orchestration
 -  PostgreSQL – Data storage
