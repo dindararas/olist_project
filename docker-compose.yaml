@@ -1,0 +1,52 @@
+services:
+  db:
+    container_name: postgres_container
+    image: postgres:14.17
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_DB: olist_db
+      POSTGRES_USER: olist_user
+      POSTGRES_PASSWORD: olist_password
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+      - ./scripts/airflow_init.sql:/docker-entrypoint-initdb.d/airflow_init.sql
+    networks:
+      - olist-network
+  airflow:
+    container_name: airflow_container
+    image: apache/airflow:3.0.0
+    ports:
+      - 8070:8080
+    environment:
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow_user:airflow_password@db:5432/airflow_db
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW_CONN_OLIST_DB: postgres://olist_user:olist_password@db:5432/olist_db
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./scripts:/opt/airflow/scripts
+      - ./data:/opt/airflow/data
+      - ~/.kaggle:/root/.kaggle
+    depends_on:
+      - db
+    networks:
+      - olist-network
+    command: >
+      bash -c "pip install kaggle apache-airflow-providers-postgres && airflow db migrate && airflow standalone"
+  metabase:
+    container_name: metabase_container
+    image:  metabase/metabase:latest
+    ports:
+      - 3000:3000
+    volumes:
+      - ./metabase/data:/metabase-data
+    environment:
+      - MB_DB_FILE=/metabase-data/metabase.db
+    depends_on:
+      - db
+    networks:
+      - olist-network
+networks:
+  olist-network:
+    driver: bridge 

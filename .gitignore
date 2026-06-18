@@ -1,0 +1,16 @@
+# environment
+.env
+venv/
+__pycache__/
+
+# data 
+data/raw/
+postgres/data/
+*.csv
+
+# airflow
+airflow/logs/
+metabase-data/
+*.json
+!package.json
+.kaggle/
